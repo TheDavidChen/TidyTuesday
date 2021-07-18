@@ -7,3 +7,7 @@ This repo formatting is based on [Cédric Scherer's repo](https://github.com/z3t
 ---
 
 # Visualizations
+
+### [2021/29](https://github.com/TheDavidChen/TidyTuesday/tree/main/plots/2021_29_ScoobyDoo) Scooby Doo Episodes
+
+![Cumulative number of culprits caught by the Scooby Doo lead characters. ](https://github.com/TheDavidChen/TidyTuesday/blob/main/plots/2021_29_ScoobyDoo/ScoobyDooCaught.png)
