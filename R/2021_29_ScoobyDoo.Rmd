@@ -12,8 +12,6 @@ rm(list = ls())
 # Load packages
 library(tidyverse)
 library(directlabels) 
-library(here)
-library(pdftools)
 
 # Read in data
 scoobydoo <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-13/scoobydoo.csv')
@@ -64,7 +62,5 @@ captures_long %>%
 ```
 
 ```{r}
-## convert PDF to PNG
-path <- here::here("plots", "2021_29", "2021_29_ScoobyDoo")
-ggsave(glue::glue("../plots/2021_29_ScoobyDoo/ScoobyDooCaught.png"), width = 12, height = 9)
+ggsave("../plots/2021_29_ScoobyDoo/ScoobyDooCaught.png", width = 7, height = 5)
 ```
