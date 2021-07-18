@@ -1,0 +1,70 @@
+---
+title: "Scooby Doo Episodes — TidyTuesday — 2021 Week 29"
+author: "David Chen"
+date: "7/16/2021"
+output: html_document
+---
+
+```{r, message=FALSE, warning=FALSE}
+# Clear environment
+rm(list = ls())
+
+# Load packages
+library(tidyverse)
+library(directlabels) 
+library(here)
+library(pdftools)
+
+# Read in data
+scoobydoo <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-13/scoobydoo.csv')
+```
+
+```{r}
+# Keep only the index and caught variables
+# Convert the caught variables from CHAR to LOGICAL, then to numeric
+# Convert NAs to 0 -> if they were not in the episode, they didn't catch the villian
+# Compute the cumulative sum, ordered by the index
+captures <-
+  scoobydoo %>%
+  select(index, caught_fred:caught_scooby) %>%
+  mutate(across(caught_fred:caught_scooby, as.logical)) %>%
+  mutate(across(caught_fred:caught_scooby, as.numeric)) %>%
+  replace(is.na(.), 0) %>%
+  mutate(Fred = cumsum(caught_fred),
+         Daphnie = cumsum(caught_daphnie),
+         Velma = cumsum(caught_velma),
+         Shaggy = cumsum(caught_shaggy),
+         Scooby = cumsum(caught_scooby))
+
+# Convert from wide to long format for ggplot
+captures_long <-
+  captures %>%
+  select(index, Fred:Scooby) %>%
+  gather("character", "count", -index)
+```
+
+```{r}
+# Create line plots by character
+# Change the colors based on the character color schemes
+### https://www.color-hex.com/color-palette/48915
+# Add direct labels instead of a legend
+# Expand the x axis to show the direct labels
+captures_long %>%
+  ggplot(aes(x = index, y = count, color = character)) +
+  geom_line(aes(color = character)) +
+  scale_color_manual(values=c("#7c68ae", "#76a2ca", "#966a00", "#b2bb1b", "#cd7e05")) +
+  geom_dl(aes(label = character), method="last.points") +
+  expand_limits(x = 650) +
+  theme_classic() +
+  theme(legend.position = "none") +
+  labs(x = "Episode (Ordered by Date Aired)",
+       y = "Cumulative Number of Culprits Caught",
+       title = "Who Caught the Most Villians in Scooby Doo? Scooby and Fred — By Far",
+       caption = "Episodes from 1969-09-13 to 2021-02-25. Includes movies, crossovers, and TV series. Data from plummye on Kaggle.")
+```
+
+```{r}
+## convert PDF to PNG
+path <- here::here("plots", "2021_29", "2021_29_ScoobyDoo")
+ggsave(glue::glue("../plots/2021_29_ScoobyDoo/ScoobyDooCaught.png"), width = 12, height = 9)
+```
